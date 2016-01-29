@@ -9,6 +9,9 @@ public class CharacterMovement : MonoBehaviour
     private Vector3 moveDirection = Vector3.zero;
 
     public CharacterController controller;
+    public GameController gameController;
+
+    private int cycle = -14;
 
     void FixedUpdate()
     {
@@ -17,12 +20,35 @@ public class CharacterMovement : MonoBehaviour
         moveDirection.x = moveDir.x * speed;
         moveDirection.z = moveDir.z * speed;
 
-        if (Input.GetButton("Jump") && controller.isGrounded)
-            moveDirection.y = jumpSpeed;
-        moveDirection.y -= gravity * Time.deltaTime;
-
         if (controller.gameObject.activeSelf)
             controller.Move(moveDirection * Time.deltaTime);
+
+
+        // movement effects
+        if (gameController.AllowGameplay)
+        {
+            if (moveDirection.x != 0 || moveDirection.z != 0)
+            {
+                // footstep sounds
+                if (!gameController.soundController.footstepsSource.isPlaying)
+                    gameController.soundController.PlayFootsteps(true);
+
+                // view bobbing
+                if (cycle < 1)
+                {
+                    gameController.mainCamera.transform.position += new Vector3(0, 0.015f, 0);
+                }
+                else
+                {
+                    gameController.mainCamera.transform.position -= new Vector3(0, 0.015f, 0);
+                    if (cycle == 14)
+                        cycle = -14;
+                }
+                cycle++;
+            }
+            else
+                gameController.soundController.PlayFootsteps(false);
+        }
 
     }
 }

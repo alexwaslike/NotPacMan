@@ -5,6 +5,10 @@ public class GhostObj : MonoBehaviour {
 
     public GameController controller;
 
+    private AudioSource audioSource;
+    public float lowVolume = 0f;
+    public float highVolume = 0.1f;
+
     private enum GhostState
     {
         Wander, Pursue
@@ -18,6 +22,10 @@ public class GhostObj : MonoBehaviour {
     private bool canCurrentlySeePlayer;
 
 	void Start () {
+
+        audioSource = GetComponentInParent<AudioSource>();
+        audioSource.volume = lowVolume;
+
         state = GhostState.Wander;
         agent = transform.parent.GetComponent<NavMeshAgent>();
         agent.obstacleAvoidanceType = ObstacleAvoidanceType.NoObstacleAvoidance;
@@ -54,11 +62,13 @@ public class GhostObj : MonoBehaviour {
         {
             state = GhostState.Pursue;
             agent.destination = controller.mainCharacter.transform.position;
+            audioSource.volume = highVolume;
 
         } else if(newState == GhostState.Wander)
         {
             state = GhostState.Wander;
             SetNewDestination();
+            audioSource.volume = lowVolume;
         }
     }
 

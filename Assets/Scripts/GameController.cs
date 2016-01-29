@@ -9,6 +9,8 @@ public class GameController : MonoBehaviour {
     public GameObject hopeUsedAnimation;
 
     // scene refs
+    public SoundController soundController;
+    public Camera mainCamera;
     public GameObject HUD;
     public GameObject gameStartUI;
     public GameObject loseUI;
@@ -24,6 +26,10 @@ public class GameController : MonoBehaviour {
 
     // state control
     private bool allowGameplay;
+    public bool AllowGameplay
+    {
+        get { return allowGameplay; }
+    }
     private bool _gamePaused;
     private float _timeScale;
 
@@ -37,6 +43,12 @@ public class GameController : MonoBehaviour {
         for (int i = 0; i < numGhostsToSpawn; i++)
         {
             newPosition = GetRandomPointWithinRadius(mapRadius);
+            for (int j=0; j<30; j++)
+            {
+                if (Vector3.Distance(newPosition, mainCharacter.transform.position) < 15.0f)
+                    newPosition = GetRandomPointWithinRadius(mapRadius);
+            }
+                
             GameObject newGhost = Instantiate(ghost, newPosition, Quaternion.identity) as GameObject;
             newGhost.GetComponentInChildren<GhostObj>().controller = this;
         }
